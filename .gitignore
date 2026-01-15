@@ -1,0 +1,15 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+
+# State files (never commit)
+*.tfstate
+*.tfstate.backup
+
+# Variables with secrets
+*.tfvars
+*.tfvars.json
+
+# Logs
+crash.log
+
