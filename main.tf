@@ -19,10 +19,7 @@ resource "azurerm_resource_group" "aks-rg2" {
   location = "Central US"                                                                                               
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = "rg-aks-demo"
-  location = "East US"
-}
+
 
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = "demo-aks-cluster"
