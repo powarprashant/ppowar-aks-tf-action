@@ -41,6 +41,13 @@ jobs:
         id: sub
         run: echo "SUB_ID=$(az account show --query id -o tsv)" >> $GITHUB_OUTPUT
 
+      - name: Terraform Plan
+        env:
+          TF_VAR_subscription_id: ${{ steps.sub.outputs.SUB_ID }}
+          TF_VAR_vm_size: Standard_B4s_v2
+        run: terraform -chdir=terraform plan -out=tfplan.bin
+
+
       - name: Terraform Apply
         working-directory: terraform
         env:
