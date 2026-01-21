@@ -1,39 +1,34 @@
-terraform {
-  required_version = ">= 1.5.0"
 
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      #version = "~> 3.100"
-      version = "~> 3.117.1"
-    }
-  }
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.prefix}-poc-rg"
+  location = var.location
 }
-                                                                                                                         
-provider "azurerm" {                                                                                                     
-  features {}                                                                                                            
-}   
-# Create a Azure resource group
-resource "azurerm_resource_group" "aks-rg2" {                                                                          
-  name     = "aks-rg2-tf"                                                                                         
-  location = "Central US"                                                                                               
-}
-
-
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "demo-aks-cluster"
+  name                = "${var.prefix}-aks"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = "demoaks"
+  dns_prefix          = "${var.prefix}-aks"
+
+  kubernetes_version = null
+  node_resource_group = "${var.prefix}-aks-nodes"
 
   default_node_pool {
-    name       = "system"
-    node_count = 2
-    vm_size    = "Standard_DS2_v2"
+    name                = "system"
+    vm_size             = var.vm_size
+    node_count          = var.node_count
+    os_disk_size_gb     = 60
+    type                = "VirtualMachineScaleSets"
   }
 
   identity {
     type = "SystemAssigned"
   }
+
+  network_profile {
+    network_plugin = "kubenet"
+    outbound_type  = "loadBalancer"
+  }
+
+  role_based_access_control_enabled = true
 }
