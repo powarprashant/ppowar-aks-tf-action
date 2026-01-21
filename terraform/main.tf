@@ -1,5 +1,5 @@
 
-resource "azurerm_resource_group" "rg" {
+resource "azurerm_resource_group" "ppowar-poc-rg" {
   name     = "${var.prefix}-poc-rg"
   location = var.location
 }
