@@ -3,7 +3,7 @@ variable "prefix" {
 }
 
 variable "location" {
-  default = "centralindia"
+  default = "centralus"
 }
 
 variable "node_count" {
