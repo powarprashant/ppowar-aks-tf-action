@@ -11,7 +11,7 @@ variable "node_count" {
 }
 
 variable "vm_size" {
-  default = "Standard_DS2_v2"
+  default = "Standard_B4s_v2"
 }
 
 variable "subscription_id" {
