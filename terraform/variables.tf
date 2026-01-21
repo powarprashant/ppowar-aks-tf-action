@@ -11,7 +11,7 @@ variable "node_count" {
 }
 
 variable "vm_size" {
-  default = "Standard_F2s"
+  default = "standard_dc2ads_v5"
 }
 
 variable "subscription_id" {
