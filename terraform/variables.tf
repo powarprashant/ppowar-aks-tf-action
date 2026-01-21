@@ -3,7 +3,7 @@ variable "prefix" {
 }
 
 variable "location" {
-  default = "centralus"
+  default = "eastus"
 }
 
 variable "node_count" {
