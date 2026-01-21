@@ -6,7 +6,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'infra/**'
+      - 'terraform/**'
       - 'k8s/**'
       - '.github/workflows/aks-terraform.yml'
 
@@ -34,7 +34,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        working-directory: infra
+        working-directory: terraform
         run: terraform init
 
       - name: Get Subscription ID
@@ -42,14 +42,14 @@ jobs:
         run: echo "SUB_ID=$(az account show --query id -o tsv)" >> $GITHUB_OUTPUT
 
       - name: Terraform Apply
-        working-directory: infra
+        working-directory: terraform
         env:
           TF_VAR_subscription_id: ${{ steps.sub.outputs.SUB_ID }}
         run: terraform apply -auto-approve
 
       - name: Get Terraform Outputs
         id: tf
-        working-directory: infra
+        working-directory: terraform
         run: |
           echo "RG=$(terraform output -raw resource_group_name)" >> $GITHUB_OUTPUT
           echo "AKS=$(terraform output -raw aks_name)" >> $GITHUB_OUTPUT
