@@ -87,13 +87,10 @@ jobs:
           kubectx --help
           kubens --help
 
-      - name: Deploy Guestbook App
-        run: |
-          kubectl apply -f k8s/guestbook/
+      - name: Install Docker
+        uses: docker/setup-docker@v3
+        with:
+          version: "24.0.7"
 
-      - name: Wait for frontend
-        run: kubectl rollout status deploy/frontend -n guestbook --timeout=300s
-
-      - name: Get frontend external IP
-        run: kubectl get svc frontend -n guestbook -o wide
-
+      - name: Docker version
+        run: docker --version
