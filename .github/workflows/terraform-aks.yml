@@ -41,12 +41,11 @@ jobs:
         id: sub
         run: echo "SUB_ID=$(az account show --query id -o tsv)" >> $GITHUB_OUTPUT
 
-      - name: Terraform Plan
+      - name : Terraform Plan
+        working-directory: terraform
         env:
           TF_VAR_subscription_id: ${{ steps.sub.outputs.SUB_ID }}
-          TF_VAR_vm_size: Standard_B4s_v2
-        run: terraform -chdir=terraform plan -out=tfplan.bin
-
+        run: terraform plan
 
       - name: Terraform Apply
         working-directory: terraform
@@ -66,19 +65,27 @@ jobs:
 
       - name: Install Helm
         uses: azure/setup-helm@v4
-        with:
+        with: 
           version: v3.14.4
 
       - name: Helm version
         run: helm version
-        
 
-      - name: Deploy Guestbook App
+      - name: Install kubectx and kubens
         run: |
-          kubectl apply -f k8s/guestbook/
+          sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
+          sudo ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
+          sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 
-      - name: Wait for frontend
-        run: kubectl rollout status deploy/frontend -n guestbook --timeout=300s
+      - name: Verify kubectx & kubens
+        run: |
+          kubectx --help
+          kubens --help
 
-      - name: Get frontend external IP
-        run: kubectl get svc frontend -n guestbook -o wide
+      - name: Install Docker
+        uses: docker/setup-docker@v3
+        with:
+          version: "24.0.7"
+
+      - name: Docker version
+        run: docker --version
