@@ -1,0 +1,91 @@
+
+name: AKS via Terraform + 3-tier Guestbook
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'terraform/**'
+      - 'k8s/**'
+      - '.github/workflows/aks-terraform.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Show subscription
+        run: az account show -o table
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Get Subscription ID
+        id: sub
+        run: echo "SUB_ID=$(az account show --query id -o tsv)" >> $GITHUB_OUTPUT
+
+      - name : Terraform Plan
+        working-directory: terraform
+        env:
+          TF_VAR_subscription_id: ${{ steps.sub.outputs.SUB_ID }}
+        run: terraform plan
+
+      - name: Terraform Apply
+        working-directory: terraform
+        env:
+          TF_VAR_subscription_id: ${{ steps.sub.outputs.SUB_ID }}
+        run: terraform apply -auto-approve
+
+      - name: Get Terraform Outputs
+        id: tf
+        working-directory: terraform
+        run: |
+          echo "RG=$(terraform output -raw resource_group_name)" >> $GITHUB_OUTPUT
+          echo "AKS=$(terraform output -raw aks_name)" >> $GITHUB_OUTPUT
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with: 
+          version: v3.14.4
+
+      - name: Helm version
+        run: helm version
+
+      - name: Install kubectx and kubens
+        run: |
+          sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
+          sudo ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
+          sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+
+      - name: Verify kubectx & kubens
+        run: |
+          kubectx --help
+          kubens --help
+
+      - name: Install Docker
+        uses: docker/setup-docker@v3
+        with:
+          version: "24.0.7"
+
+      - name: Docker version
+        run: docker --version
