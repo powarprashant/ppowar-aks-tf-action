@@ -71,11 +71,6 @@ jobs:
       - name: Helm version
         run: helm version
 
-      - name: Install Docker
-        uses: docker/setup-docker@v3
-        with:
-          version: "24.0.7"
-
       - name: Install kubectx and kubens
         run: |
           sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
