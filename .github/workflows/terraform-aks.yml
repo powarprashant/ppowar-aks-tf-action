@@ -82,10 +82,3 @@ jobs:
           kubectx --help
           kubens --help
 
-      - name: Install Docker
-        uses: docker/setup-docker@v3
-        with:
-          version: "24.0.7"
-
-      - name: Docker version
-        run: docker --version
