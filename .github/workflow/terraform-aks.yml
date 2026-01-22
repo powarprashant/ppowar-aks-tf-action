@@ -63,8 +63,14 @@ jobs:
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
 
-      - name: Get AKS Credentials
-        run: az aks get-credentials -g "${{ steps.tf.outputs.RG }}" -n "${{ steps.tf.outputs.AKS }}" --overwrite-existing
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with: 
+          version: v3.14.4
+
+      - name: Helm version
+        run: helm version
+        
 
       - name: Deploy Guestbook App
         run: |
