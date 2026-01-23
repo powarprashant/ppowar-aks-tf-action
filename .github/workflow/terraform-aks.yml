@@ -42,8 +42,8 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        
 
-      # ⭐ IMPORTANT: Remote backend + ARM_ACCESS_KEY here
       - name: Terraform Init (Remote Backend + Reconfigure)
         working-directory: terraform
         run: terraform init -reconfigure
