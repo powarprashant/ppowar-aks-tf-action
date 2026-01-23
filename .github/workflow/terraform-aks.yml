@@ -1,4 +1,3 @@
-
 name: AKS via Terraform + 3-tier Guestbook
 
 on:
@@ -18,14 +17,25 @@ jobs:
       id-token: write
       contents: read
 
+    env:
+      ARM_USE_OIDC: true
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
+
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
+      # OIDC Login (NO Client Secret Required)
       - name: Azure Login
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Show subscription
         run: az account show -o table
@@ -33,15 +43,16 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
+      # ⭐ IMPORTANT: Remote backend + ARM_ACCESS_KEY here
+      - name: Terraform Init (Remote Backend + Reconfigure)
         working-directory: terraform
-        run: terraform init
+        run: terraform init -reconfigure
 
       - name: Get Subscription ID
         id: sub
         run: echo "SUB_ID=$(az account show --query id -o tsv)" >> $GITHUB_OUTPUT
 
-      - name : Terraform Plan
+      - name: Terraform Plan
         working-directory: terraform
         env:
           TF_VAR_subscription_id: ${{ steps.sub.outputs.SUB_ID }}
@@ -65,7 +76,7 @@ jobs:
 
       - name: Install Helm
         uses: azure/setup-helm@v4
-        with: 
+        with:
           version: v3.14.4
 
       - name: Helm version
@@ -81,4 +92,3 @@ jobs:
         run: |
           kubectx --help
           kubens --help
-
