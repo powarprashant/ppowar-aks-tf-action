@@ -10,7 +10,7 @@ variable "prefix" {
 
 variable "vm_size" {
   description = "VM size for AKS nodes"
-  default     = "Standard_DS2_v2"
+  default     = "Standard_DC4s_v3"
 }
 
 variable "node_count" {
