@@ -12,6 +12,7 @@ jobs:
       contents: read
 
     env:
+      # Azure OIDC Auth
       ARM_USE_OIDC: true
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -30,7 +31,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Backend Exists
-        run: echo "Backend already created. Skipping backend provisioning."
+        run: echo "Backend already exists. Skipping backend provisioning."
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -41,10 +42,18 @@ jobs:
 
       - name: Terraform Plan
         working-directory: terraform
+        env:
+          TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_client_id: ${{ secrets.AZURE_CLIENT_ID }}
         run: terraform plan
 
       - name: Terraform Apply
         working-directory: terraform
+        env:
+          TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_client_id: ${{ secrets.AZURE_CLIENT_ID }}
         run: terraform apply -auto-approve
 
       - name: Install kubectl
