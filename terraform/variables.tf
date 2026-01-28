@@ -1,19 +1,19 @@
 variable "location" {
-  default = "eastus"
+  description = "Azure region for all resources"
+  default     = "eastus"
 }
 
 variable "prefix" {
-  default = "ppowar"
+  description = "Prefix for all resource names"
+  default     = "ppowar"
 }
 
 variable "vm_size" {
-  default = "Standard_DS2_v2"
+  description = "VM size for AKS nodes"
+  default     = "Standard_DS2_v2"
 }
 
 variable "node_count" {
-  default = 2
+  description = "Number of nodes in the AKS cluster"
+  default     = 2
 }
-
-variable "subscription_id" {}
-variable "tenant_id" {}
-variable "client_id" {}
