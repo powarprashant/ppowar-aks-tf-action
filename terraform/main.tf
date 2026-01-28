@@ -1,6 +1,5 @@
-
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.prefix}-poc-rg"
+  name     = "${var.prefix}-rg"
   location = var.location
 }
 
@@ -10,15 +9,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = "${var.prefix}-aks"
 
-  kubernetes_version   = null
-  node_resource_group  = "${var.prefix}-aks-nodes"
+  kubernetes_version = null
+  node_resource_group = "${var.prefix}-aks-nodes"
 
   default_node_pool {
-    name            = "system"
-    vm_size         = var.vm_size
-    node_count      = var.node_count
+    name       = "system"
+    vm_size    = var.vm_size
+    node_count = var.node_count
+    type       = "VirtualMachineScaleSets"
     os_disk_size_gb = 60
-    type            = "VirtualMachineScaleSets"
   }
 
   identity {

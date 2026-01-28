@@ -1,19 +1,19 @@
+variable "location" {
+  default = "eastus"
+}
+
 variable "prefix" {
   default = "ppowar"
 }
 
-variable "location" {
-  default = "eastus"
+variable "vm_size" {
+  default = "Standard_DS2_v2"
 }
 
 variable "node_count" {
   default = 2
 }
 
-variable "vm_size" {
-  default = "standard_dc2ads_v5"
-}
-
-variable "subscription_id" {
-  default = ""
-}
+variable "subscription_id" {}
+variable "tenant_id" {}
+variable "client_id" {}
