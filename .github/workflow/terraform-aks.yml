@@ -29,11 +29,8 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Create Backend RG + Storage + Container
-        run: |
-          az group create -n ppowar-backend-rg -l eastus --only-show-errors
-          az storage account create -n ppowarbackendsa -g ppowar-backend-rg -l eastus --sku Standard_LRS --only-show-errors || true
-          az storage container create --name tfstate --account-name ppowarbackendsa || true
+      - name: Backend Exists
+        run: echo "Backend already created. Skipping backend provisioning."
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
